@@ -44,7 +44,6 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
     final endDate = endDateController.text;
     final location = locationController.text;
     final venue = venueController.text;
-    
 
     final token = Provider.of<UserProvider>(context, listen: false).user!.token;
 
@@ -73,31 +72,19 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
 
     final response = await request.send();
 
-    if (response.statusCode == 201) {
+    if (response.statusCode == 201 || response.statusCode == 200) {
       // Success
-      final responseJson = await response.stream.bytesToString();
-      final eventId = json.decode(responseJson)['id'];
-      final uploadRequest = http.MultipartRequest(
-        'POST',
-        Uri.parse('http://10.0.2.2:8000/api/events/$eventId/upload/'),
+       ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Created'),
+        ),
       );
-      uploadRequest.headers['Authorization'] = 'Bearer $token';
-      if (_eventCover != null) {
-        final bytes = await _eventCover!.readAsBytes();
-        final file = http.MultipartFile.fromBytes(
-          'image',
-          bytes,
-          filename: 'image.jpg',
-        );
-        uploadRequest.files.add(file);
-      }
-      await uploadRequest.send();
       Navigator.of(context).pop();
     } else {
       // Error
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Failed to create donation'),
+          content: Text('Failed to create Event'),
         ),
       );
     }
@@ -105,9 +92,8 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
 
   @override
   Widget build(BuildContext context) {
-      Widget _buildImageContainer() {
+    Widget _buildImageContainer() {
       return SizedBox(
-        
         width: MediaQuery.of(context).size.width,
         child: InkWell(
           onTap: _selectImage,
@@ -124,14 +110,11 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
         ),
       );
     }
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
-        title: Text(
-          "Create event",
-          style: Styles.headlineStyle3
-              .copyWith(color: Color.fromARGB(255, 124, 124, 124)),
-        ),
+        title: Text("Create event", style: Styles.headline),
       ),
       body: Padding(
         padding: EdgeInsets.all(16),
@@ -206,7 +189,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                 TextFormField(
                   controller: descriptionController,
                   maxLines: 3,
-                   decoration: InputDecoration(
+                  decoration: InputDecoration(
                     labelText: 'description',
                     filled: true,
                     labelStyle: TextStyle(color: Colors.grey),
@@ -226,7 +209,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                 SizedBox(height: 16),
                 TextFormField(
                   controller: startDateController,
-                   decoration: InputDecoration(
+                  decoration: InputDecoration(
                     labelText: 'Start date',
                     filled: true,
                     labelStyle: TextStyle(color: Colors.grey),
@@ -246,7 +229,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                 SizedBox(height: 16),
                 TextFormField(
                   controller: endDateController,
-                   decoration: InputDecoration(
+                  decoration: InputDecoration(
                     labelText: 'End Date',
                     filled: true,
                     labelStyle: TextStyle(color: Colors.grey),
@@ -264,13 +247,25 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                   },
                 ),
                 SizedBox(height: 32),
-               ElevatedButton(
-                  onPressed: () {
-                    if (_formKey.currentState!.validate()) {
-                      _createEvent(context);
-                    }
-                  },
-                  child: Text('Create'),
+                Container(
+                  width: double.infinity,
+                  height: 60,
+                  decoration: BoxDecoration(
+                    color: Styles.blueColor,
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  child: Center(
+                    child: InkWell(
+                      onTap: () {
+                        if (_formKey.currentState!.validate()) {
+                          _createEvent(context);
+                        }
+                      },
+                      child: Text('Create',
+                          style:
+                              Styles.cardTitle.copyWith(color: Colors.white)),
+                    ),
+                  ),
                 ),
               ],
             ),

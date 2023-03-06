@@ -34,22 +34,16 @@ class _MyEventsState extends State<MyEvents> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Text(
-                  'Your Events',
-                  style: Styles.headlineStyle3.copyWith(
-                      color: Color.fromARGB(255, 0, 0, 0),
-                      fontSize: 15,
-                      fontWeight: FontWeight.w500),
+                  'Your Donations',
+                  style: Styles.cardTitle
                 ),
                 InkWell(
                   onTap: () => Navigator.of(context).push(CupertinoPageRoute(
-                    builder: (context) =>
-                        ProfileEventScreen(profileId: widget.profileId)
+                    builder: (context) =>  ProfileEventScreen(profileId:  widget.profileId),
                   )),
                   child: Text(
                     'View All',
-                    style: Styles.headlineStyle3.copyWith(
-                        color: Colors.grey, fontWeight: FontWeight.normal),
-                  ),
+                    style: Styles.cardDescription)
                 )
               ],
             ),
@@ -64,7 +58,8 @@ class _MyEventsState extends State<MyEvents> {
               itemBuilder: (context, index) {
                 final event = widget.events[index];
                 return Container(
-                  width: 300,
+                  width: 340,
+                  padding: EdgeInsets.all(10),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20),
                     boxShadow: [
@@ -90,7 +85,7 @@ class _MyEventsState extends State<MyEvents> {
                       Positioned(
                         bottom: 0,
                         child: Container(
-                          width: 300,
+                          width: 330,
                           padding: const EdgeInsets.all(16),
                           decoration: BoxDecoration(
                             color: Colors.white,
@@ -103,10 +98,7 @@ class _MyEventsState extends State<MyEvents> {
                             children: [
                               Text(
                                 event['name'],
-                                style: TextStyle(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w500,
-                                ),
+                                style: Styles.cardTitle
                               ),
                               SizedBox(height: 8),
                               Row(
@@ -120,7 +112,8 @@ class _MyEventsState extends State<MyEvents> {
                                         context,
                                         CupertinoPageRoute(
                                           builder: (context) =>
-                                              EventDetailScreen(event: event),
+                                              EventDetailScreen(
+                                                  event: event),
                                         ),
                                       );
                                     },
@@ -145,7 +138,7 @@ class _MyEventsState extends State<MyEvents> {
                                               color: Colors.grey,
                                             ),
                                           ),
-                                          Gap(8),
+                                             Gap(8),
                                           Icon(
                                             Icons.remove_red_eye,
                                             color:
@@ -169,23 +162,20 @@ class _MyEventsState extends State<MyEvents> {
                                     },
                                     child: Container(
                                       padding: EdgeInsets.symmetric(
-                                          horizontal: 15, vertical: 5),
+                                          horizontal: 10, vertical: 5),
                                       decoration: BoxDecoration(
                                         color: Colors.green,
                                         borderRadius: BorderRadius.circular(20),
                                       ),
                                       child: Row(
                                         mainAxisAlignment:
-                                            MainAxisAlignment.center,
+                                            MainAxisAlignment.spaceEvenly,
                                         children: [
                                           Text(
                                             'Edit',
-                                            style: TextStyle(
-                                              fontSize: 15,
-                                              color: Colors.white,
-                                            ),
+                                            style: Styles.cardDescription.copyWith(color:  Colors.white)
                                           ),
-                                          Gap(8),
+                                             Gap(8),
                                           Icon(
                                             Icons.edit,
                                             color: Colors.white,
@@ -209,6 +199,5 @@ class _MyEventsState extends State<MyEvents> {
           )
         ],
       ),
-    );
-  }
+    );}
 }

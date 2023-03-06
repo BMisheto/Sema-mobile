@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:sema/providers/user_provider.dart';
 import 'package:sema/theme/app_styles.dart';
@@ -28,6 +29,7 @@ class _EditEventScreenState extends State<EditEventScreen> {
   final startDateController = TextEditingController();
   final endDateController = TextEditingController();
   final descriptionController = TextEditingController();
+  File? _imageFile;
 
   @override
   void initState() {
@@ -42,34 +44,45 @@ class _EditEventScreenState extends State<EditEventScreen> {
 
   Future<void> _updateEvent() async {
     try {
-      final token = Provider.of<UserProvider>(context, listen: false).user!.token;
-      final response = await http.put(
-        Uri.parse('http://10.0.2.2:8000/api/events/update/${widget.event['_id']}/'),
-        headers: {'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token'},
-        body: jsonEncode({
-          'name': nameController.text,
-          'description': descriptionController.text,
-          'venue': venueController.text,
-          'location': venueController.text,
-          'start_date': startDateController.text,
-          'end_date': endDateController.text,
-        }),
+      final token =
+          Provider.of<UserProvider>(context, listen: false).user!.token;
+      final request = http.MultipartRequest(
+        'PUT',
+        Uri.parse(
+            'http://10.0.2.2:8000/api/events/update/${widget.event['_id']}/'),
       );
-      if (response.statusCode == 200) {
+      request.headers.addAll({
+        'Authorization': 'Bearer $token',
+      });
+      request.fields['name'] = nameController.text;
+
+      request.fields['description'] = descriptionController.text;
+      request.fields['start_date'] = startDateController.text;
+      request.fields['end_date'] = endDateController.text;
+      request.fields['venue'] = venueController.text;
+      request.fields['location'] = locationController.text;
+
+      if (_imageFile != null) {
+        request.files.add(await http.MultipartFile.fromPath(
+          'event_cover',
+          _imageFile!.path,
+        ));
+      }
+      final response = await request.send();
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        // Update was successful
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Event Updated'),
+            content: Text('Updated'),
             backgroundColor: Colors.green,
           ),
         );
-        // Update was successful
         Navigator.of(context).pop();
       } else {
         // Update failed
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Failed to Event'),
+            content: Text('Failed to update'),
             backgroundColor: Colors.red,
           ),
         );
@@ -84,11 +97,25 @@ class _EditEventScreenState extends State<EditEventScreen> {
     }
   }
 
+  void _selectImage() async {
+    final pickedFile =
+        await ImagePicker().getImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      setState(() {
+        _imageFile = File(pickedFile.path);
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-       appBar: AppBar(
-        title: Text('Edit Donation', style: Styles.headlineStyle3,),
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        title: Text(
+          'Edit Event',
+          style: Styles.headline,
+        ),
         backgroundColor: Colors.transparent,
       ),
       body: SingleChildScrollView(
@@ -96,10 +123,47 @@ class _EditEventScreenState extends State<EditEventScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Gap(20),
+            InkWell(
+              onTap: _selectImage,
+              child: Container(
+                height: 250,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  color: Colors.grey[200],
+                ),
+                child: _imageFile != null
+                    ? SizedBox(
+                        width: MediaQuery.of(context).size.width,
+                        child: Image.file(
+                          _imageFile!,
+                          width: double.infinity,
+                          height: 300,
+                          fit: BoxFit.cover,
+                        ),
+                      )
+                    : SizedBox(
+                        child: Image.network(
+                          'http://10.0.2.2:8000${widget.event['event_cover']}',
+                          height: 200,
+                          width: double.infinity,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+              ),
+            ),
+            Gap(20),
             TextField(
               controller: nameController,
               decoration: InputDecoration(
                 labelText: 'Name',
+                filled: true,
+                labelStyle: TextStyle(color: Colors.grey),
+                fillColor: Colors.grey[200],
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(15),
+                  borderSide: BorderSide.none,
+                ),
               ),
             ),
             SizedBox(height: 16.0),
@@ -107,6 +171,13 @@ class _EditEventScreenState extends State<EditEventScreen> {
               controller: descriptionController,
               decoration: InputDecoration(
                 labelText: 'Description',
+                filled: true,
+                labelStyle: TextStyle(color: Colors.grey),
+                fillColor: Colors.grey[200],
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(15),
+                  borderSide: BorderSide.none,
+                ),
               ),
             ),
             SizedBox(height: 16.0),
@@ -114,6 +185,13 @@ class _EditEventScreenState extends State<EditEventScreen> {
               controller: startDateController,
               decoration: InputDecoration(
                 labelText: 'start date',
+                filled: true,
+                labelStyle: TextStyle(color: Colors.grey),
+                fillColor: Colors.grey[200],
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(15),
+                  borderSide: BorderSide.none,
+                ),
               ),
             ),
             SizedBox(height: 16.0),
@@ -121,6 +199,13 @@ class _EditEventScreenState extends State<EditEventScreen> {
               controller: startDateController,
               decoration: InputDecoration(
                 labelText: 'end date',
+                filled: true,
+                labelStyle: TextStyle(color: Colors.grey),
+                fillColor: Colors.grey[200],
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(15),
+                  borderSide: BorderSide.none,
+                ),
               ),
             ),
             SizedBox(height: 16.0),
@@ -128,6 +213,13 @@ class _EditEventScreenState extends State<EditEventScreen> {
               controller: venueController,
               decoration: InputDecoration(
                 labelText: 'Venue',
+                filled: true,
+                labelStyle: TextStyle(color: Colors.grey),
+                fillColor: Colors.grey[200],
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(15),
+                  borderSide: BorderSide.none,
+                ),
               ),
             ),
             SizedBox(height: 16.0),
@@ -135,17 +227,30 @@ class _EditEventScreenState extends State<EditEventScreen> {
               controller: locationController,
               decoration: InputDecoration(
                 labelText: 'Location',
+                filled: true,
+                labelStyle: TextStyle(color: Colors.grey),
+                fillColor: Colors.grey[200],
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(15),
+                  borderSide: BorderSide.none,
+                ),
               ),
             ),
             Gap(25),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                GestureDetector(
+            Container(
+              width: double.infinity,
+              height: 60,
+              decoration: BoxDecoration(
+                color: Styles.blueColor,
+                borderRadius: BorderRadius.circular(15),
+              ),
+              child: Center(
+                child: InkWell(
                   onTap: _updateEvent,
-                  child: Text('Update', style:  Styles.headlineStyle3.copyWith(color: Colors.green, fontSize: 16),),
+                  child: Text('Update',
+                      style: Styles.cardTitle.copyWith(color: Colors.white)),
                 ),
-              ],
+              ),
             ),
           ],
         ),

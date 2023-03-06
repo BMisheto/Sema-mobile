@@ -12,6 +12,24 @@ class UserProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void setGuestUser() {
+    _user = User(
+      id: 0,
+      email: 'guest@example.com',
+      first_name: 'Guest',
+      last_name: 'User',
+      mobile: '',
+      country: '',
+      profile_photo: '',
+      token: '',
+      is_staff: false,
+      isAdmin: false,
+      is_active: true,
+      password: ''
+    );
+    notifyListeners();
+  }
+
   void setUserFromModel(User user) {
     _user = user;
     notifyListeners();

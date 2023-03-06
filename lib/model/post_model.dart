@@ -14,7 +14,7 @@ import 'dart:convert';
 import 'dart:ffi';
 
 class Post {
-  int id;
+  int? id;
   String title;
   String content;
   String link;
@@ -65,7 +65,7 @@ class Post {
 
   factory Post.fromMap(Map<String, dynamic> map) {
     return Post(
-      id: map['_id'] as int,
+      id: map['_id'] as int?,
       title: map['title'] as String,
       content: map['content'] as String,
       is_poll: map['is_poll'] as bool,

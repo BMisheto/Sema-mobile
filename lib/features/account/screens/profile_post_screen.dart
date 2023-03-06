@@ -25,7 +25,7 @@ class ProfilePostScreen extends StatefulWidget {
 class _ProfilePostScreenState extends State<ProfilePostScreen> {
   Client client = http.Client();
 
-  List<Post> posts = [];
+   List<Map<String, dynamic>> posts = [];
 
   @override
   void initState() {
@@ -45,7 +45,7 @@ class _ProfilePostScreenState extends State<ProfilePostScreen> {
     final data = json.decode(response.body);
 
     setState(() {
-      posts = List<Post>.from(data['posts'].map((post) => Post.fromMap(post)));
+       posts = List<Map<String, dynamic>>.from(data['posts']);
       final pages = data['pages'];
       final page = data['page'];
       final postCount = data['post_count'];
@@ -64,8 +64,7 @@ class _ProfilePostScreenState extends State<ProfilePostScreen> {
         shadowColor: Styles.bgColor.withOpacity(0.2),
         title: Text(
           "Your posts",
-          style: Styles.headlineStyle3
-              .copyWith(color: Color.fromARGB(255, 131, 131, 131)),
+          style: Styles.headline
         ),
         // actions: [
         //   IconButton(onPressed: onPressed, icon: icon)
@@ -89,77 +88,29 @@ class _ProfilePostScreenState extends State<ProfilePostScreen> {
                         onTap: () => Navigator.of(context).push(
                             CupertinoPageRoute(
                                 builder: (context) => PostDetailScreen(
-                                    postId: post.id.toString(),
-                                    isPoll: post.is_poll))),
+                                    postId: post['_id'].toString(),
+                                   ))),
                         child: ListTile(
                           contentPadding: EdgeInsets.symmetric(
                               horizontal: 16.0, vertical: 8.0),
                           title: Text(
-                            post.title,
-                            style: TextStyle(
-                              fontSize: 16.0,
-                              fontWeight: FontWeight.bold,
-                            ),
+                            post['title'],
+                            style: Styles.cardTitle
                           ),
                           subtitle: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               SizedBox(height: 8.0),
-                              Text(
-                                post.content,
-                                style: TextStyle(
-                                  fontSize: 14.0,
-                                  fontWeight: FontWeight.normal,
-                                  color: Color.fromARGB(137, 11, 11, 11),
-                                ),
-                              ),
-                              if (post.link != null) SizedBox(height: 8.0),
+                               Text(
+                              post['content'],
+                               style:Styles.cardDescription
+                            ),
+                             
 
                               Row(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
-                            // GestureDetector(
-                            //   onTap: () {
-                            //     // Navigate to the DonationDetailScreen
-                            //     Navigator.push(
-                            //       context,
-                            //       CupertinoPageRoute(
-                            //         builder: (context) => PostDetailScreen(
-                            //             postId: post.id.toString(),
-                            //             isPoll: post.is_poll),
-                            //       ),
-                            //     );
-                            //   },
-                            //   child: Container(
-                            //     padding: EdgeInsets.symmetric(
-                            //         horizontal: 15, vertical: 5),
-                            //     decoration: BoxDecoration(
-                            //       border: Border.all(
-                            //           width: 1,
-                            //           color: CupertinoColors
-                            //               .extraLightBackgroundGray),
-                            //       borderRadius: BorderRadius.circular(20),
-                            //     ),
-                            //     child: Row(
-                            //       mainAxisAlignment: MainAxisAlignment.end,
-                            //       children: [
-                            //         Text(
-                            //           'View',
-                            //           style: TextStyle(
-                            //             fontSize: 15,
-                            //             color: Colors.grey,
-                            //           ),
-                            //         ),
-                            //         Gap(8),
-                            //         Icon(
-                            //           Icons.remove_red_eye,
-                            //           color: Color.fromARGB(255, 99, 99, 99),
-                            //           size: 16,
-                            //         ),
-                            //       ],
-                            //     ),
-                            //   ),
-                            // ),
+                          
                             GestureDetector(
                               onTap: () {
                                 // Navigate to the EditDonationScreen
@@ -183,10 +134,7 @@ class _ProfilePostScreenState extends State<ProfilePostScreen> {
                                   children: [
                                     Text(
                                       'Edit',
-                                      style: TextStyle(
-                                        fontSize: 15,
-                                        color: Colors.white,
-                                      ),
+                                      style: Styles.cardTitle.copyWith(color:Colors.white)
                                     ),
                                     Gap(8),
                                     Icon(

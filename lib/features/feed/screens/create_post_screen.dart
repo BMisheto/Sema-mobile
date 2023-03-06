@@ -86,7 +86,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
         backgroundColor: Colors.transparent,
         title: Text(
           "Create Post",
-          style: Styles.headlineStyle3.copyWith(color: Colors.black),
+          style: Styles.headline
         ),
       ),
       body: SingleChildScrollView(
@@ -98,10 +98,17 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
             children: [
               TextFormField(
                 controller: _titleController,
-                decoration: const InputDecoration(
-                  labelText: 'Title',
-                  border: OutlineInputBorder(),
-                ),
+                decoration: InputDecoration(
+                    labelText: 'Title',
+                    labelStyle:
+                        TextStyle(color: Color.fromARGB(255, 182, 182, 182)),
+                    filled: true,
+                    fillColor: Colors.grey[200],
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(15),
+                      borderSide: BorderSide.none,
+                    ),
+                  ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter a title';
@@ -113,10 +120,17 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
               TextFormField(
                 controller: _contentController,
                 maxLines: null,
-                decoration: const InputDecoration(
-                  labelText: 'Content',
-                  border: OutlineInputBorder(),
-                ),
+               decoration: InputDecoration(
+                    labelText: 'Content',
+                    labelStyle:
+                        TextStyle(color: Color.fromARGB(255, 182, 182, 182)),
+                    filled: true,
+                    fillColor: Colors.grey[200],
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(15),
+                      borderSide: BorderSide.none,
+                    ),
+                  ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter content';
@@ -128,10 +142,17 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
               TextFormField(
                 controller: _linkController,
                 maxLines: null,
-                decoration: const InputDecoration(
-                  labelText: 'Link',
-                  border: OutlineInputBorder(),
-                ),
+                decoration: InputDecoration(
+                    labelText: 'Link',
+                    labelStyle:
+                        TextStyle(color: Color.fromARGB(255, 182, 182, 182)),
+                    filled: true,
+                    fillColor: Colors.grey[200],
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(15),
+                      borderSide: BorderSide.none,
+                    ),
+                  ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter Link';
@@ -156,9 +177,16 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
               if (_isPoll) ...[
                 TextFormField(
                   controller: _choiceControllers[0],
-                  decoration: const InputDecoration(
-                    labelText: 'Choice 1',
-                    border: OutlineInputBorder(),
+                 decoration: InputDecoration(
+                    labelText: 'Choice',
+                    labelStyle:
+                        TextStyle(color: Color.fromARGB(255, 182, 182, 182)),
+                    filled: true,
+                    fillColor: Colors.grey[200],
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(15),
+                      borderSide: BorderSide.none,
+                    ),
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -170,9 +198,16 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                 const SizedBox(height: 16.0),
                 TextFormField(
                   controller: _choiceControllers[1],
-                  decoration: const InputDecoration(
-                    labelText: 'Choice 2',
-                    border: OutlineInputBorder(),
+                  decoration: InputDecoration(
+                    labelText: 'Choice',
+                    labelStyle:
+                        TextStyle(color: Color.fromARGB(255, 182, 182, 182)),
+                    filled: true,
+                    fillColor: Colors.grey[200],
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(15),
+                      borderSide: BorderSide.none,
+                    ),
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -182,24 +217,59 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                   },
                 ),
                 const SizedBox(height: 16.0),
-                ElevatedButton(
-                  onPressed: () {
+                // ElevatedButton(
+                //   onPressed: () {
+                //     setState(() {
+                //       _choiceControllers.add(TextEditingController());
+                //     });
+                //   },
+                //   child: const Text('Add Choice'),
+                // ),
+                 Container(
+                  width: double.infinity,
+                  height: 60,
+                  decoration: BoxDecoration(
+                    color: Color.fromARGB(179, 227, 227, 227),
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  child: Center(
+                    child: GestureDetector(
+                      onTap: () {
                     setState(() {
                       _choiceControllers.add(TextEditingController());
                     });
                   },
-                  child: const Text('Add Choice'),
+                      child: Text('Add Choice',
+                          style:
+                              Styles.cardTitle.copyWith(color: Colors.grey)),
+                    ),
+                  ),
                 ),
               ],
               const SizedBox(height: 16.0),
-              ElevatedButton(
-                onPressed: () {
-                  if (_formKey.currentState!.validate()) {
-                    _createPost();
-                  }
-                },
-                child: const Text('Create Post'),
-              ),
+               Container(
+                            width: double.infinity,
+                            height: 60,
+                            decoration:  BoxDecoration(
+                              color:  Styles.blueColor, 
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                            child: Center(
+                              child: InkWell(
+                                onTap: () {
+                    if (_formKey.currentState!.validate()) {
+                      _createPost();
+                    }
+                  },
+                                child: Text(
+                                   'Create',
+                                   style: Styles.cardTitle.copyWith(color: Colors.white)
+                                 
+                                ),
+                              ),
+                            ),
+                          ),
+             
             ],
           ),
         ),

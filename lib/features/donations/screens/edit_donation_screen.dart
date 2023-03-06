@@ -1,12 +1,15 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
 import 'package:http/http.dart' as http;
-import 'package:http/http.dart';
 import 'package:provider/provider.dart';
 import 'package:sema/model/donation_model.dart';
 import 'package:sema/providers/user_provider.dart';
 import 'package:sema/theme/app_styles.dart';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:image_picker/image_picker.dart';
 
 class DonationEditScreen extends StatefulWidget {
   final Map<String, dynamic> donation;
@@ -25,7 +28,7 @@ class _DonationEditScreenState extends State<DonationEditScreen> {
   late String _name;
   late String _description;
   late double _target;
-  
+  File? _imageFile;
 
   @override
   void initState() {
@@ -35,31 +38,38 @@ class _DonationEditScreenState extends State<DonationEditScreen> {
     _targetController.text = widget.donation['target'];
     _name = widget.donation['name'];
     _description = widget.donation['description'];
-   
   }
 
   Future<void> _updateDonation() async {
-    
     try {
-      final token = Provider.of<UserProvider>(context, listen: false).user!.token;
-     
-      final response = await http.put(
-        Uri.parse('http://10.0.2.2:8000/api/donations/update/${widget.donation['_id']}/'),
-        headers: {'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token'},
-        body: jsonEncode({
-          'name': _nameController.text,
-          'description': _descriptionController.text,
-          'target': _targetController.text.toString(),
-        }),
+      final token =
+          Provider.of<UserProvider>(context, listen: false).user!.token;
+      final request = http.MultipartRequest(
+        'PUT',
+        Uri.parse(
+            'http://10.0.2.2:8000/api/donations/update/${widget.donation['_id']}/'),
       );
-      if (response.statusCode == 200) {
+      request.headers.addAll({
+        'Authorization': 'Bearer $token',
+      });
+      request.fields['name'] = _nameController.text;
+      request.fields['description'] = _descriptionController.text;
+      request.fields['target'] = _targetController.text;
+      if (_imageFile != null) {
+        request.files.add(await http.MultipartFile.fromPath(
+          'donation_cover',
+          _imageFile!.path,
+        ));
+      }
+      final response = await request.send();
+      if (response.statusCode == 200 || response.statusCode == 201) {
         // Update was successful
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Updated'),
             backgroundColor: Colors.green,
-          ),);
+          ),
+        );
         Navigator.of(context).pop();
       } else {
         // Update failed
@@ -71,7 +81,6 @@ class _DonationEditScreenState extends State<DonationEditScreen> {
         );
       }
     } catch (e) {
-      
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Something Went Wrong,Try Again'),
@@ -81,12 +90,25 @@ class _DonationEditScreenState extends State<DonationEditScreen> {
     }
   }
 
-  @override
+  void _selectImage() async {
+    final pickedFile =
+        await ImagePicker().getImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      setState(() {
+        _imageFile = File(pickedFile.path);
+      });
+    }
+  }
 
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text('Edit Donation', style: Styles.headlineStyle3,),
+        title: Text(
+          'Edit Donation',
+          style: Styles.headline,
+        ),
         backgroundColor: Colors.transparent,
       ),
       body: SingleChildScrollView(
@@ -95,18 +117,65 @@ class _DonationEditScreenState extends State<DonationEditScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              Gap(20),
+              InkWell(
+                onTap: _selectImage,
+                child: Container(
+                  height: 250,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20),
+              color: Colors.grey[200],
+            ),
+                  child:
+                   _imageFile != null
+                      ? SizedBox(
+                        width: MediaQuery.of(context).size.width,
+                        child: Image.file(
+                            _imageFile!,
+                            width: double.infinity,
+                            height: 300,
+                            fit: BoxFit.cover,
+                          ),
+                      )
+                      : 
+                      SizedBox(
+                          child: Image.network(
+                            'http://10.0.2.2:8000${widget.donation['donation_cover']}',
+                            height: 200,
+                            width: double.infinity,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                ),
+              ),
+              Gap(20),
               TextField(
                 controller: _nameController,
                 decoration: InputDecoration(
                   labelText: 'Name',
+                  filled: true,
+                  labelStyle: TextStyle(color: Colors.grey),
+                  fillColor: Colors.grey[200],
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(15),
+                    borderSide: BorderSide.none,
+                  ),
                 ),
                 onChanged: (value) => setState(() => _name = value),
               ),
               SizedBox(height: 16.0),
               TextField(
                 controller: _descriptionController,
+                maxLines: 20,
                 decoration: InputDecoration(
                   labelText: 'Description',
+                  filled: true,
+                  labelStyle: TextStyle(color: Colors.grey),
+                  fillColor: Colors.grey[200],
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(15),
+                    borderSide: BorderSide.none,
+                  ),
                 ),
                 onChanged: (value) => setState(() => _description = value),
               ),
@@ -117,26 +186,40 @@ class _DonationEditScreenState extends State<DonationEditScreen> {
                 decoration: InputDecoration(
                   labelText: 'Target Amount',
                   prefixText: '\$',
+                  filled: true,
+                  labelStyle: TextStyle(color: Colors.grey),
+                  fillColor: Colors.grey[200],
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(15),
+                    borderSide: BorderSide.none,
+                  ),
                 ),
                 onChanged: (value) =>
                     setState(() => _target = double.tryParse(value) ?? 0.0),
               ),
               SizedBox(height: 16.0),
-              Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                GestureDetector(
-                  onTap: _updateDonation,
-                  child: Text('Update', style:  Styles.headlineStyle3.copyWith(color: Colors.green, fontSize: 16),),
-                ),
-              ],
-            ),
+              Container(
+                            width: double.infinity,
+                            height: 60,
+                            decoration:  BoxDecoration(
+                              color:  Styles.blueColor, 
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                            child: Center(
+                              child: InkWell(
+                                onTap: _updateDonation,
+                                child: Text(
+                                   'Update',
+                                   style: Styles.cardTitle.copyWith(color: Colors.white)
+                                 
+                                ),
+                              ),
+                            ),
+                          ),
             ],
           ),
         ),
       ),
     );
   }
-
-
 }

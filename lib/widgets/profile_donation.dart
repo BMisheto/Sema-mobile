@@ -35,10 +35,7 @@ class _ProfileDonationState extends State<ProfileDonation> {
               children: [
                 Text(
                   'Your Donations',
-                  style: Styles.headlineStyle3.copyWith(
-                      color: Color.fromARGB(255, 0, 0, 0),
-                      fontSize: 15,
-                      fontWeight: FontWeight.w500),
+                  style: Styles.cardTitle
                 ),
                 InkWell(
                   onTap: () => Navigator.of(context).push(CupertinoPageRoute(
@@ -46,9 +43,7 @@ class _ProfileDonationState extends State<ProfileDonation> {
                   )),
                   child: Text(
                     'View All',
-                    style: Styles.headlineStyle3.copyWith(
-                        color: Colors.grey, fontWeight: FontWeight.normal),
-                  ),
+                    style: Styles.cardDescription)
                 )
               ],
             ),
@@ -103,10 +98,7 @@ class _ProfileDonationState extends State<ProfileDonation> {
                             children: [
                               Text(
                                 donation['name'],
-                                style: TextStyle(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w500,
-                                ),
+                                style: Styles.cardTitle
                               ),
                               SizedBox(height: 8),
                               Row(
@@ -182,10 +174,7 @@ class _ProfileDonationState extends State<ProfileDonation> {
                                         children: [
                                           Text(
                                             'Edit',
-                                            style: TextStyle(
-                                              fontSize: 15,
-                                              color: Colors.white,
-                                            ),
+                                            style: Styles.cardTitle.copyWith(color:  Colors.white)
                                           ),
                                              Gap(8),
                                           Icon(

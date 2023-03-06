@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +12,7 @@ import 'package:sema/theme/app_styles.dart';
 import 'package:gap/gap.dart';
 import 'package:http/http.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfileEditScreen extends StatefulWidget {
   final Map<String, dynamic> profile;
@@ -25,6 +27,7 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
   late TextEditingController _lastNameController;
   late TextEditingController _mobileController;
   late TextEditingController _countryController;
+  File? _imageFile;
 
 
   @override
@@ -102,113 +105,130 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
       );
     }
   }
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
         appBar: AppBar(
           backgroundColor: Colors.transparent,
           title: Text(
             "Edit Profile",
-            style: Styles.headlineStyle4.copyWith(color: Colors.black),
+            style: Styles.headline
           ),
         ),
         body: Center(
           child: ListView(
             padding: EdgeInsets.all(15),
             children: [
-              Container(),
-              Gap(20),
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 12),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "Firstname",
-                      style: Styles.headlineStyle3
-                          .copyWith(fontSize: 14, fontWeight: FontWeight.w400),
+             
+             
+              
+              Gap(15),
+              TextFormField(
+                controller: _firstNameController,
+                decoration: InputDecoration(
+                    labelText: 'Firstname',
+                    labelStyle:
+                        TextStyle(color: Color.fromARGB(255, 182, 182, 182)),
+                    filled: true,
+                    fillColor: Colors.grey[200],
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(15),
+                      borderSide: BorderSide.none,
                     ),
-                    TextField(
-                      maxLength: 20,
-                    )
-                  ],
-                ),
+                  ),
+                validator: (value) {
+                  if (value!.isEmpty) {
+                    return 'Please enter your First name';
+                  }
+                  return null;
+                },
               ),
               Gap(15),
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 12),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "Lastname",
-                      style: Styles.headlineStyle3
-                          .copyWith(fontSize: 14, fontWeight: FontWeight.w400),
+              TextFormField(
+                controller: _lastNameController,
+                decoration: InputDecoration(
+                    labelText: 'Lastname',
+                    labelStyle:
+                        TextStyle(color: Color.fromARGB(255, 182, 182, 182)),
+                    filled: true,
+                    fillColor: Colors.grey[200],
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(15),
+                      borderSide: BorderSide.none,
                     ),
-                    TextField(
-                      maxLength: 20,
-                    )
-                  ],
-                ),
+                  ),
+                validator: (value) {
+                  if (value!.isEmpty) {
+                    return 'Please enter your First name';
+                  }
+                  return null;
+                },
               ),
               Gap(15),
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 12),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "Mobile",
-                      style: Styles.headlineStyle3
-                          .copyWith(fontSize: 14, fontWeight: FontWeight.w400),
+              TextFormField(
+                controller: _mobileController,
+                decoration: InputDecoration(
+                    labelText: 'Mobile',
+                    labelStyle:
+                        TextStyle(color: Color.fromARGB(255, 182, 182, 182)),
+                    filled: true,
+                    fillColor: Colors.grey[200],
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(15),
+                      borderSide: BorderSide.none,
                     ),
-                    TextField(
-                      maxLength: 20,
-                    )
-                  ],
-                ),
+                  ),
+                validator: (value) {
+                  if (value!.isEmpty) {
+                    return 'Please enter your Mobile';
+                  }
+                  return null;
+                },
               ),
               Gap(15),
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 12),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "Country",
-                      style: Styles.headlineStyle3
-                          .copyWith(fontSize: 14, fontWeight: FontWeight.w400),
+              TextFormField(
+                controller: _countryController,
+                decoration: InputDecoration(
+                    labelText: 'Country',
+                    labelStyle:
+                        TextStyle(color: Color.fromARGB(255, 182, 182, 182)),
+                    filled: true,
+                    fillColor: Colors.grey[200],
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(15),
+                      borderSide: BorderSide.none,
                     ),
-                    TextField(
-                      maxLength: 20,
-                    )
-                  ],
-                ),
+                  ),
+                validator: (value) {
+                  if (value!.isEmpty) {
+                    return 'Please enter your Country';
+                  }
+                  return null;
+                },
               ),
-              Gap(40),
+              Gap(15),
+              
+             
               Container(
-                padding: EdgeInsets.symmetric(horizontal: 12),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    GestureDetector(
-                      onTap: _updateUser,
-                      child: Text(
-                        "Save",
-                        style: Styles.headlineStyle3.copyWith(
-                          color: Colors.green,
-                          fontWeight: FontWeight.w400,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+                            width: double.infinity,
+                            height: 60,
+                            decoration:  BoxDecoration(
+                              color:  Styles.blueColor, 
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                            child: Center(
+                              child: GestureDetector(
+                                onTap: _updateUser,
+                                child: Text(
+                                   'Save',
+                                   style: Styles.cardTitle.copyWith(color: Colors.white)
+                                 
+                                ),
+                              ),
+                            ),
+                          ),
             ],
           ),
         ));

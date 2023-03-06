@@ -20,7 +20,8 @@ class ProfilePosts extends StatelessWidget {
   final List<dynamic> posts;
   final String profileId;
 
-  const ProfilePosts({Key? key, required this.posts,required this.profileId}) : super(key: key);
+  const ProfilePosts({Key? key, required this.posts, required this.profileId})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -37,22 +38,16 @@ class ProfilePosts extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Text(
-                  'Your Posts',
-                  style: Styles.headlineStyle3.copyWith(
-                      color: Color.fromARGB(255, 0, 0, 0),
-                      fontSize: 15,
-                      fontWeight: FontWeight.w500),
-                ),
+                Text('Your Posts', style: Styles.cardTitle),
                 InkWell(
-                  onTap: () => Navigator.of(context).push(CupertinoPageRoute(
-                    builder: (context) =>  ProfilePostScreen(profileId: profileId, ),
-                  )),
-                  child: Text(
-                    'View All',
-                    style: Styles.headlineStyle3.copyWith(
-                        color: Colors.grey, fontWeight: FontWeight.normal),
+                  onTap: () => Navigator.of(context).push(
+                    CupertinoPageRoute(
+                      builder: (context) => ProfilePostScreen(
+                        profileId: profileId,
+                      ),
+                    ),
                   ),
+                  child: Text('View All', style: Styles.cardDescription),
                 )
               ],
             ),
@@ -84,16 +79,16 @@ class ProfilePosts extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         Text(
-                          post.title,
+                          post['title'],
                           style: TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
                         Text(
-                          post.content.length <= 50
-                              ? post.content
-                              : '${post.content.substring(0, 100)}...',
+                        post['content'].length <= 50
+                              ? post['content']
+                              : '${post['content'].substring(0, 100)}...',
                           style: TextStyle(
                             fontSize: 13,
                             fontWeight: FontWeight.normal,
@@ -110,8 +105,7 @@ class ProfilePosts extends StatelessWidget {
                                   context,
                                   CupertinoPageRoute(
                                     builder: (context) => PostDetailScreen(
-                                        postId: post.id.toString(),
-                                        isPoll: post.is_poll),
+                                         postId: post['_id'].toString(),),
                                   ),
                                 );
                               },
@@ -128,13 +122,7 @@ class ProfilePosts extends StatelessWidget {
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.end,
                                   children: [
-                                    Text(
-                                      'View',
-                                      style: TextStyle(
-                                        fontSize: 15,
-                                        color: Colors.grey,
-                                      ),
-                                    ),
+                                    Text('View', style: Styles.cardDescription),
                                     Gap(8),
                                     Icon(
                                       Icons.remove_red_eye,
@@ -166,13 +154,9 @@ class ProfilePosts extends StatelessWidget {
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    Text(
-                                      'Edit',
-                                      style: TextStyle(
-                                        fontSize: 15,
-                                        color: Colors.white,
-                                      ),
-                                    ),
+                                    Text('Edit',
+                                        style: Styles.cardTitle
+                                            .copyWith(color: Colors.white)),
                                     Gap(8),
                                     Icon(
                                       Icons.edit,

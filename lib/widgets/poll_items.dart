@@ -27,30 +27,17 @@ class _PollItemsState extends State<PollItems> {
     super.initState();
   }
 
-  void _onVote(int index) async {
+  void _onVote(String pollId) async {
     // TODO: Add code to handle voting on the poll item at the given index.
-    final pollId = widget.polls[index]['poll_id'];
-    final url = Uri.parse('http://10.0.2.2:8000/api/feed/polls/$pollId/vote/');
-    final response = await http.post(url);
+   
+    final url = Uri.parse('http://10.0.2.2:8000/api/feed/polls/${pollId}/vote/');
+    final response = await http.put(url);
     // handle response
   }
 
   @override
   Widget build(BuildContext context) {
-    // final List<charts.Series<PollData, String>> _chartData =
-    //     widget.polls.map((poll) {
-    //   final data = [
-    //     PollData(poll['choice_text'], poll['votes']),
-    //   ];
-    //   return charts.Series<PollData, String>(
-    //     id: poll['choice_text'],
-    //     domainFn: (PollData pollData, _) => pollData.choice,
-    //     measureFn: (PollData pollData, _) => pollData.votes,
-    //     data: data,
-    //     labelAccessorFn: (PollData pollData, _) =>
-    //         '${pollData.choice}: ${pollData.votes}',
-    //   );
-    // }).toList();
+
 
     return Container(
       decoration: BoxDecoration(
@@ -63,10 +50,7 @@ class _PollItemsState extends State<PollItems> {
             padding: const EdgeInsets.only(left: 16.0, top: 8.0, bottom: 8.0),
             child: Text(
               "Polls",
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 14.0,
-              ),
+              style: Styles.cardTitle
             ),
           ),
           Gap(10),
@@ -96,23 +80,15 @@ class _PollItemsState extends State<PollItems> {
                       Expanded(
                         child: Text(
                           widget.polls[index]['choice_text'],
-                          style: Styles.headlineStyle3.copyWith(
-                            fontSize: 15,
-                            color: Colors.black,
-                            fontWeight: FontWeight.normal,
-                          ),
+                          style: Styles.cardTitle
                         ),
                       ),
                       Text(
                         widget.polls[index]['votes'].toString(),
-                        style: Styles.headlineStyle3.copyWith(
-                          fontSize: 15,
-                          color: Colors.black,
-                          fontWeight: FontWeight.normal,
-                        ),
+                        style: Styles.cardTitle
                       ),
                       IconButton(
-                        onPressed: () => _onVote(widget.polls[index]),
+                        onPressed: () => _onVote(widget.polls[index]['_id'].toString()),
                         icon: Icon(Icons.check_box),
                       ),
                     ],

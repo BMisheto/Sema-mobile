@@ -66,25 +66,15 @@ class _CreateDonationScreenState extends State<CreateDonationScreen> {
 
     final response = await request.send();
 
-    if (response.statusCode == 201) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       // Success
-      final responseJson = await response.stream.bytesToString();
-      final donationId = json.decode(responseJson)['id'];
-      final uploadRequest = http.MultipartRequest(
-        'POST',
-        Uri.parse('http://10.0.2.2:8000/api/donations/$donationId/upload/'),
+     
+    
+     ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Added'),
+        ),
       );
-      uploadRequest.headers['Authorization'] = 'Bearer $token';
-      if (_donationCover != null) {
-        final bytes = await _donationCover!.readAsBytes();
-        final file = http.MultipartFile.fromBytes(
-          'image',
-          bytes,
-          filename: 'image.jpg',
-        );
-        uploadRequest.files.add(file);
-      }
-      await uploadRequest.send();
       Navigator.of(context).pop();
     } else {
       // Error
@@ -123,8 +113,7 @@ class _CreateDonationScreenState extends State<CreateDonationScreen> {
         backgroundColor: Colors.transparent,
         title: Text(
           "Create donation",
-          style: Styles.headlineStyle3
-              .copyWith(color: Color.fromARGB(255, 124, 124, 124)),
+          style: Styles.headline
         ),
       ),
       body: Padding(
@@ -201,14 +190,30 @@ class _CreateDonationScreenState extends State<CreateDonationScreen> {
                   },
                 ),
                 Gap(20),
-                ElevatedButton(
-                  onPressed: () {
+                 Container(
+                            width: double.infinity,
+                            height: 60,
+                            decoration:  BoxDecoration(
+                              color:  Styles.blueColor, 
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                            child: Center(
+                              child: InkWell(
+                                onTap: () {
                     if (_formKey.currentState!.validate()) {
                       _createDonation(context);
                     }
                   },
-                  child: Text('Create'),
-                ),
+                                child: Text(
+                                   'Create',
+                                   style: Styles.cardTitle.copyWith(color: Colors.white)
+                                 
+                                ),
+                              ),
+                            ),
+                          ),
+               
+                Gap(20)
               ],
             ),
           ),

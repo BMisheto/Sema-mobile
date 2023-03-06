@@ -91,114 +91,110 @@ class _ProfileDonationScreenState extends State<ProfileDonationScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
+                            Text(donation['name'],
+                                style: Styles.cardTitle.copyWith(
+                                    color: Color.fromARGB(255, 49, 49, 49),
+                                    fontWeight: FontWeight.w500)),
+                            SizedBox(height: 8),
                             Text(
-                              donation['name'],
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            // SizedBox(height: 8),
-                            // Text(
-                            //   donation['description'],
-                            //   style: TextStyle(fontSize: 16),
-                            // ),
+                                donation['description'].length <= 60
+                                    ? donation['description']
+                                    : '${donation['description'].substring(0, 95)}...',
+                                style: Styles.cardDescription),
                             SizedBox(height: 8),
                             Text(
                               'Target: ${donation['target']}',
                               style: TextStyle(fontSize: 16),
                             ),
-                            Gap(10),Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  GestureDetector(
-                                    onTap: () {
-                                      // Navigate to the DonationDetailScreen
-                                      Navigator.push(
-                                        context,
-                                        CupertinoPageRoute(
-                                          builder: (context) =>
-                                              DonationDetailScreen(
-                                                  donation: donation),
+                            Gap(10),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                GestureDetector(
+                                  onTap: () {
+                                    // Navigate to the DonationDetailScreen
+                                    Navigator.push(
+                                      context,
+                                      CupertinoPageRoute(
+                                        builder: (context) =>
+                                            DonationDetailScreen(
+                                                donation: donation),
+                                      ),
+                                    );
+                                  },
+                                  child: Container(
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: 15, vertical: 5),
+                                    decoration: BoxDecoration(
+                                      border: Border.all(
+                                          width: 1,
+                                          color: CupertinoColors
+                                              .extraLightBackgroundGray),
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      children: [
+                                        Text(
+                                          'View',
+                                          style: TextStyle(
+                                            fontSize: 15,
+                                            color: Colors.grey,
+                                          ),
                                         ),
-                                      );
-                                    },
-                                    child: Container(
-                                      padding: EdgeInsets.symmetric(
-                                          horizontal: 15, vertical: 5),
-                                      decoration: BoxDecoration(
-                                        border: Border.all(
-                                            width: 1,
-                                            color: CupertinoColors
-                                                .extraLightBackgroundGray),
-                                        borderRadius: BorderRadius.circular(20),
-                                      ),
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.end,
-                                        children: [
-                                          Text(
-                                            'View',
-                                            style: TextStyle(
-                                              fontSize: 15,
-                                              color: Colors.grey,
-                                            ),
-                                          ),
-                                             Gap(8),
-                                          Icon(
-                                            Icons.remove_red_eye,
-                                            color:
-                                                Color.fromARGB(255, 99, 99, 99),
-                                            size: 16,
-                                          ),
-                                        ],
-                                      ),
+                                        Gap(8),
+                                        Icon(
+                                          Icons.remove_red_eye,
+                                          color:
+                                              Color.fromARGB(255, 99, 99, 99),
+                                          size: 16,
+                                        ),
+                                      ],
                                     ),
                                   ),
-                                  GestureDetector(
-                                    onTap: () {
-                                      // Navigate to the EditDonationScreen
-                                      Navigator.push(
-                                        context,
-                                        CupertinoPageRoute(
-                                          builder: (context) =>
-                                              DonationEditScreen(
-                                                  donation: donation),
-                                        ),
-                                      );
-                                    },
-                                    child: Container(
-                                      padding: EdgeInsets.symmetric(
-                                          horizontal: 10, vertical: 5),
-                                      decoration: BoxDecoration(
-                                        color: Colors.green,
-                                        borderRadius: BorderRadius.circular(20),
+                                ),
+                                GestureDetector(
+                                  onTap: () {
+                                    // Navigate to the EditDonationScreen
+                                    Navigator.push(
+                                      context,
+                                      CupertinoPageRoute(
+                                        builder: (context) =>
+                                            DonationEditScreen(
+                                                donation: donation),
                                       ),
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceEvenly,
-                                        children: [
-                                          Text(
-                                            'Edit',
-                                            style: TextStyle(
-                                              fontSize: 15,
-                                              color: Colors.white,
-                                            ),
-                                          ),
-                                             Gap(8),
-                                          Icon(
-                                            Icons.edit,
+                                    );
+                                  },
+                                  child: Container(
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: 10, vertical: 5),
+                                    decoration: BoxDecoration(
+                                      color: Colors.green,
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceEvenly,
+                                      children: [
+                                        Text(
+                                          'Edit',
+                                          style: TextStyle(
+                                            fontSize: 15,
                                             color: Colors.white,
-                                            size: 16,
                                           ),
-                                        ],
-                                      ),
+                                        ),
+                                        Gap(8),
+                                        Icon(
+                                          Icons.edit,
+                                          color: Colors.white,
+                                          size: 16,
+                                        ),
+                                      ],
                                     ),
                                   ),
-                                ],
-                              ),
-                            
+                                ),
+                              ],
+                            ),
                           ],
                         ),
                       ),

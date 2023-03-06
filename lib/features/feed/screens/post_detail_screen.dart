@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get/route_manager.dart';
 import 'package:http/http.dart' as http;
 import 'package:gap/gap.dart';
 
@@ -10,9 +11,8 @@ import 'package:sema/widgets/poll_items.dart';
 
 class PostDetailScreen extends StatefulWidget {
   final String postId;
-  final bool isPoll;
 
-  const PostDetailScreen({required this.postId, required this.isPoll});
+  const PostDetailScreen({required this.postId});
 
   @override
   _PostDetailScreenState createState() => _PostDetailScreenState();
@@ -21,8 +21,8 @@ class PostDetailScreen extends StatefulWidget {
 class _PostDetailScreenState extends State<PostDetailScreen> {
   final _formKey = GlobalKey<FormState>();
   final commentController = TextEditingController();
-  Map<String, dynamic> postData = {};
-  List<dynamic> comments = [];
+  late Map<String, dynamic> postData = {};
+  late List<dynamic> comments = [];
   List<dynamic> polls = [];
   bool _isPostLoading = false;
 
@@ -38,50 +38,65 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
     setState(() {
       _isPostLoading = true;
     });
-    final response = await http
-        .get(Uri.parse('http://10.0.2.2:8000/api/feed/${widget.postId}/'));
-    final data = json.decode(response.body);
-    if (data['post'] != null) {
+    try {
+      final response = await http
+          .get(Uri.parse('http://10.0.2.2:8000/api/feed/${widget.postId}/'));
+      final data = json.decode(response.body);
+      if (data['post'] != null) {
+        setState(
+          () {
+            postData = Map<String, dynamic>.from(data['post']);
+          },
+        );
+      }
+    } catch (error) {
+      print('Error fetching post detail: $error');
+      // Handle the error as needed, such as showing an error message to the user
+    } finally {
       setState(() {
-        postData = Map<String, dynamic>.from(data['post']);
-
-        // Add the null check here
-        if (postData['is_poll'] != null && postData['is_poll']) {
-          postData['is_poll'] = true;
-        }
+        _isPostLoading = false;
       });
     }
   }
 
   _fetchComments() async {
-    final response = await http.get(
-        Uri.parse('http://10.0.2.2:8000/api/feed/comments/${widget.postId}/'));
-    final data = json.decode(response.body);
-    setState(() {
-      comments = List<dynamic>.from(data['comments']);
-    });
+    try {
+      final response = await http.get(Uri.parse(
+          'http://10.0.2.2:8000/api/feed/comments/${widget.postId}/'));
+      final data = json.decode(response.body);
+      setState(() {
+        comments = List<dynamic>.from(data['comments']);
+      });
+    } catch (error) {
+      print('Error fetching comments: $error');
+      // Handle the error as needed, such as showing an error message to the user
+    }
   }
 
   _fetchPolls() async {
-    final response = await http.get(
-        Uri.parse('http://10.0.2.2:8000/api/feed/polls/${widget.postId}/'));
-    final data = json.decode(response.body);
-    setState(() {
-      polls = List<dynamic>.from(data['polls']);
-      _isPostLoading = false;
-    });
+    try {
+      final response = await http.get(
+          Uri.parse('http://10.0.2.2:8000/api/feed/polls/${widget.postId}/'));
+      final data = json.decode(response.body);
+      setState(() {
+        polls = List<dynamic>.from(data['polls']);
+      });
+    } catch (error) {
+      print('Error fetching polls: $error');
+      // Handle the error as needed, such as showing an error message to the user
+    }
   }
 
   Future<void> _createComment() async {
     try {
- 
-      final response = await http.put(
-        Uri.parse('http://10.0.2.2:8000/api/feed/${widget.postId}/comment/create/'),
-        headers: {'Content-Type': 'application/json',
-       },
+      final response = await http.post(
+        Uri.parse(
+            'http://10.0.2.2:8000/api/feed/${widget.postId}/comment/create/'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
         body: jsonEncode({
-          'comment': commentController.text,
-          
+          'content': commentController.text,
         }),
       );
       if (response.statusCode == 200) {
@@ -91,16 +106,12 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
             backgroundColor: Colors.green,
           ),
         );
-        _fetchPostDetail();
+        commentController.clear();
         _fetchComments();
-        _fetchPolls();
-        // Update was successful
-        Navigator.of(context).pop();
       } else {
-        // Update failed
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Failed to'),
+            content: Text('Failed to add comment'),
             backgroundColor: Colors.red,
           ),
         );
@@ -115,12 +126,45 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
     }
   }
 
-
- 
+  void _onVote(String pollId) async {
+    try {
+      final url =
+          Uri.parse('http://10.0.2.2:8000/api/feed/polls/${pollId}/vote/');
+      final response = await http.put(url);
+      if (response.statusCode == 200) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Vote Submitted!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+        _fetchPolls();
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to vote'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Something went wrong. Please try again later.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    print(widget.postId);
     return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
@@ -130,83 +174,145 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
               _isPostLoading
                   ? CircularProgressIndicator()
                   : Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                          child: Text(
-                            postData['title'],
-                            style: TextStyle(
-                              fontSize: 16.0,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
+                          child:
+                              Text(postData['title'], style: Styles.headline),
                         ),
                         Gap(20),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                          child: Text(
-                            postData['content'],
-                            style: TextStyle(
-                              fontSize: 16.0,
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
+                          child: Text(postData['content'],
+                              style: Styles.paragraph),
                         ),
                       ],
                     ),
-                    Gap(20),
+              Gap(20),
+                postData['is_poll'] == false ? 
               Padding(
-                
                 padding: const EdgeInsets.all(8.0),
                 child: Column(
-                  mainAxisAlignment:  MainAxisAlignment.start,
-                  crossAxisAlignment:  CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    TextFormField(
-                  controller: commentController,
-                  decoration: InputDecoration(
-                    labelText: 'Comment',
-                    filled: true,
-                    labelStyle: TextStyle(color: Colors.grey),
-                    fillColor: Colors.grey[200],
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(15),
-                      borderSide: BorderSide.none,
+                    Form(
+                      key: _formKey,
+                      child: TextFormField(
+                        controller: commentController,
+                        decoration: InputDecoration(
+                          labelText: 'Comment',
+                          filled: true,
+                          labelStyle: TextStyle(color: Colors.grey),
+                          fillColor: Styles.cardBackground,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(15),
+                            borderSide: BorderSide.none,
+                          ),
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter a comment';
+                          }
+                          return null;
+                        },
+                      ),
                     ),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter  Comment';
-                    }
-                    return null;
-                  },
-                ),
-                Gap(10),
-                 GestureDetector(
-                  onTap: () {
-                    if (_formKey.currentState!.validate()) {
-                      _createComment();
-                    }
-                  },
-                  child: Text('Comment', style: Styles.headlineStyle4.copyWith(color: Colors.black, fontWeight:  FontWeight.normal),),
-                ),
-              
-              
-              
+                    Gap(10),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: GestureDetector(
+                        onTap: () {
+                          if (_formKey.currentState!.validate()) {
+                            _createComment();
+                          }
+                        },
+                        child: Text(
+                          'Add Comment',
+                          style: Styles.cardDescription,
+                        ),
+                      ),
+                    ),
                   ],
                 ),
-              ),
+               ) : SizedBox.shrink(),
               Gap(20),
               postData['has_photo']
                   ? Image.network(postData['postImage'])
                   : SizedBox.shrink(),
               Gap(30),
-              widget.isPoll == true
-                  ? PollItems(
-                      polls: polls,
+              postData['is_poll'] == true
+                  ? Container(
+                      decoration: BoxDecoration(
+                        color: Color.fromARGB(255, 248, 248, 248),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(
+                                left: 16.0, top: 8.0, bottom: 8.0),
+                            child: Text("Polls", style: Styles.cardTitle),
+                          ),
+                          Gap(10),
+                          Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(12.0),
+                            ),
+                            margin: EdgeInsets.symmetric(horizontal: 16.0),
+                            child: ListView.separated(
+                              physics: NeverScrollableScrollPhysics(),
+                              shrinkWrap: true,
+                              itemCount: polls.length,
+                              separatorBuilder: (context, index) => Divider(
+                                height: 0,
+                                thickness: 1,
+                                color: Colors.grey.withOpacity(0.3),
+                                indent: 16.0,
+                                endIndent: 16.0,
+                              ),
+                              itemBuilder: (BuildContext context, int index) {
+                                return Padding(
+                                  padding: const EdgeInsets.all(10),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      Expanded(
+                                        child: Text(polls[index]['choice_text'],
+                                            style: Styles.cardTitle),
+                                      ),
+                                      Text(polls[index]['votes'].toString(),
+                                          style: Styles.cardTitle),
+                                          Gap(15),
+                                      GestureDetector(
+                                        onTap: () => _onVote(
+                                            polls[index]['_id'].toString()),
+                                        child: Row(
+                                          children: [
+                                           
+                                            Text(
+                                              'Vote',
+                                              style: Styles.cardTitle.copyWith(color: Colors.grey)
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                          Gap(30),
+                        ],
+                      ),
                     )
                   : SizedBox.shrink(),
-              widget.isPoll == false
+              postData['is_poll'] == false
                   ? CommentItems(comments: comments)
                   : SizedBox.shrink(),
             ],

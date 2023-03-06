@@ -36,11 +36,18 @@ class _EventsScreenState extends State<EventsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return CupertinoPageScaffold(
-      navigationBar: CupertinoNavigationBar(
-        middle: Text('Events'),
+    return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        centerTitle: false,
+        shadowColor: Styles.bgColor.withOpacity(0.2),
+        title: Text(
+          "Events",
+          style: Styles.headline,
+        ),
       ),
-      child: ListView.builder(
+      body: ListView.builder(
         itemCount: events.length,
         itemBuilder: (context, index) {
           var event = events[index];
@@ -50,9 +57,13 @@ class _EventsScreenState extends State<EventsScreen> {
                   )),
               child: Container(
                 margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                // decoration:  BoxDecoration(
+
+                // ),
+
                 child: Card(
-                  shadowColor: Styles.cardColor.withOpacity(0.3),
-                  
+                  shadowColor: Styles.cardColor.withOpacity(0.2),
+                  color: Colors.white10,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20),
                   ),
@@ -77,23 +88,16 @@ class _EventsScreenState extends State<EventsScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              event['name'],
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            // SizedBox(height: 8),
-                            // Text(
-                            //   donation['description'],
-                            //   style: TextStyle(fontSize: 16),
-                            // ),
+                            Text(event['name'],
+                                style: Styles.cardTitle.copyWith(
+                                    color: Color.fromARGB(255, 49, 49, 49),
+                                    fontWeight: FontWeight.w500)),
                             SizedBox(height: 8),
-                            // Text(
-                            //   'Target: ${donation['target']}',
-                            //   style: TextStyle(fontSize: 16),
-                            // ),
+                            Text(
+                                event['description'].length <= 60
+                                    ? event['description']
+                                    : '${event['description'].substring(0, 95)}...',
+                                style: Styles.cardDescription),
                           ],
                         ),
                       ),

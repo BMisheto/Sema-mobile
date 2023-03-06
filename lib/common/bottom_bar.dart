@@ -6,6 +6,7 @@ import 'package:sema/features/account/screens/profile_screen.dart';
 import 'package:sema/features/donations/screens/donations_screen.dart';
 import 'package:sema/features/events/screens/events_screen.dart';
 import 'package:sema/features/feed/screens/feed_screen.dart';
+import 'package:sema/theme/app_styles.dart';
 
 class BottomBar extends StatefulWidget {
   const BottomBar({Key? key}) : super(key: key);
@@ -32,6 +33,8 @@ class _BottomBarState extends State<BottomBar> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
+      
       body: Center(
         child: _widgetOptions[_selectedIndex],
       ),
@@ -41,9 +44,9 @@ class _BottomBarState extends State<BottomBar> {
         elevation: 10,
         showSelectedLabels: false,
         showUnselectedLabels: false,
-        selectedItemColor: Colors.blueGrey,
+        selectedItemColor: Styles.blueColor,
         type: BottomNavigationBarType.fixed,
-        unselectedItemColor: const Color(0xFF526480),
+        unselectedItemColor: Styles.textGray,
         items: const [
           BottomNavigationBarItem(
               icon: Icon(FluentSystemIcons.ic_fluent_home_regular),
