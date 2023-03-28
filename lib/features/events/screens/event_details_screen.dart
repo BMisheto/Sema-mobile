@@ -1,14 +1,112 @@
-import 'package:flutter/cupertino.dart';
+import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:sema/model/event_model.dart';
-import 'package:sema/theme/app_styles.dart';
-import 'package:sema/widgets/poll_items.dart';
+
+import 'package:flutter/src/widgets/framework.dart';
+import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:gap/gap.dart';
+import 'package:sema/providers/user_provider.dart';
+import 'package:sema/theme/app_styles.dart';
+import 'package:http/http.dart' as http;
+import 'package:http/http.dart';
+import 'package:provider/provider.dart';
+import 'package:sema/utils/url.dart';
 
-class EventDetailScreen extends StatelessWidget {
-  final Map<String, dynamic> event;
+class EventDetailScreen extends StatefulWidget {
+    final Map<String, dynamic> event;
+  const EventDetailScreen({super.key, required this.event});
 
-  const EventDetailScreen({required this.event});
+  @override
+  State<EventDetailScreen> createState() => _EventDetailScreenState();
+}
+
+class _EventDetailScreenState extends State<EventDetailScreen> {
+  late UserProvider userProvider;
+
+
+
+   @override
+  void initState() {
+    super.initState();
+    userProvider = Provider.of<UserProvider>(context, listen: false);
+   
+  }
+
+  Future<void> _addAttendee() async {
+  final userProvider = Provider.of<UserProvider>(context, listen: false);
+
+
+
+  
+  final response = await http.post(
+    Uri.parse('${ApiUrl}api/events/attending/add/${widget.event['_id']}/'),
+    headers: <String, String>{
+      'Content-Type': "application/json",
+      'Authorization': 'Bearer ${userProvider.user!.token}',
+    },
+    body: jsonEncode(<String, dynamic>{
+      'user': userProvider.user!.id,
+      
+          
+    }),
+  );
+
+  
+  if (response.statusCode == 200) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Added to list'),
+        backgroundColor: Colors.green,
+      ),
+    );
+    Navigator.of(context).pop();
+  } else {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Something went wrong try again'),
+        backgroundColor: Colors.red,
+      ),
+    );
+    Navigator.of(context).pop();
+    // Handle the error here
+  }
+}
+  Future<void> _removeAttendee() async {
+  final userProvider = Provider.of<UserProvider>(context, listen: false);
+  final response = await http.delete(
+    Uri.parse('${ApiUrl}api/events/attending/remove/${widget.event['_id']}/'),
+    headers: <String, String>{
+      'Content-Type': "application/json",
+      'Authorization': 'Bearer ${userProvider.user!.token}',
+    },
+    body: jsonEncode(<String, dynamic>{
+      'user': userProvider.user!.id,
+      
+          
+    }),
+  );
+
+  
+  if (response.statusCode == 200) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Removed from list'),
+        backgroundColor: Colors.green,
+      ),
+    );
+    Navigator.of(context).pop();
+  } else {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Something went wrong try again'),
+        backgroundColor: Colors.red,
+      ),
+    );
+    Navigator.of(context).pop();
+    // Handle the error here
+  }
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -16,6 +114,7 @@ class EventDetailScreen extends StatelessWidget {
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
+        title: Text("Event Details", style: Styles.paragraph,)
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -28,7 +127,7 @@ class EventDetailScreen extends StatelessWidget {
                   image: DecorationImage(
                     fit: BoxFit.cover,
                     image: NetworkImage(
-                      'http://10.0.2.2:8000${event['event_cover']}',
+                      '${MediaUrl}${widget.event['event_cover']}',
                     ),
                   ),
                 ),
@@ -42,7 +141,7 @@ class EventDetailScreen extends StatelessWidget {
                   children: [
                     Gap(5),
                     Text(
-                      event['name'],
+                      widget.event['name'],
                       style: Styles.bigHeadline,
                     ),
                     Gap(15),
@@ -60,7 +159,7 @@ class EventDetailScreen extends StatelessWidget {
                             ),
                             Gap(5),
                             Text(
-                              event['start_date'],
+                              widget.event['start_date'],
                               style: Styles.paragraph,
                             ),
                           ],
@@ -75,7 +174,7 @@ class EventDetailScreen extends StatelessWidget {
                             ),
                             Gap(5),
                             Text(
-                              event['end_date'],
+                              widget.event['end_date'],
                               style: Styles.paragraph,
                             ),
                           ],
@@ -97,7 +196,7 @@ class EventDetailScreen extends StatelessWidget {
                             ),
                             Gap(5),
                             Text(
-                              event['location'],
+                              widget.event['location'],
                               style: Styles.paragraph,
                             ),
                           ],
@@ -112,11 +211,35 @@ class EventDetailScreen extends StatelessWidget {
                             ),
                             Gap(5),
                             Text(
-                              event['venue'],
+                              widget.event['venue'],
                               style: Styles.paragraph,
                             ),
                           ],
                         ),
+                      ],
+                    ),
+                    Gap(20),
+                  
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Attending',
+                              style: Styles.cardTitle,
+                            ),
+                            Gap(5),
+                            Text(
+                              widget.event['attendees'].toString(),
+                              style: Styles.paragraph,
+                            ),
+                          ],
+                        ),
+                       
                       ],
                     ),
                   ],
@@ -126,11 +249,13 @@ class EventDetailScreen extends StatelessWidget {
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 16),
                 child: Text(
-                  event['description'],
-                  style: Styles.paragraph,
+                  widget.event['description'],
+                  style: Styles.paragraph.copyWith(color: Colors.grey.shade800),
                 ),
               ),
               SizedBox(height: 16),
+
+              userProvider.user?.id  == 0 ? SizedBox.shrink() :
                Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Container(
@@ -143,8 +268,29 @@ class EventDetailScreen extends StatelessWidget {
                  
                   child: Center(
                     child: GestureDetector(
-                      onTap: (){},
-                      child: Text('Attend', style: Styles.paragraph.copyWith(color: Colors.white)),
+                      onTap: _addAttendee,
+                      child: Text('Add me to list', style: Styles.paragraph.copyWith(color: Colors.white)),
+                    ),
+                  )
+                ,
+                ),
+              ),
+              Gap(10),
+               userProvider.user?.id  == 0 ? SizedBox.shrink() :
+               Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Container(
+                  height: 50,
+                  decoration: BoxDecoration(
+                     color: Colors.grey.shade600,
+                     borderRadius:  BorderRadius.circular(10)
+                  ),
+                  width: double.infinity,
+                 
+                  child: Center(
+                    child: GestureDetector(
+                      onTap: _removeAttendee,
+                      child: Text('Remove me from list', style: Styles.paragraph.copyWith(color: Colors.white)),
                     ),
                   )
                 ,

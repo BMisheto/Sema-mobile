@@ -18,14 +18,16 @@ class UserProvider extends ChangeNotifier {
       email: 'guest@example.com',
       first_name: 'Guest',
       last_name: 'User',
-      mobile: '',
-      country: '',
-      profile_photo: '',
+      mobile: 'Guest',
+      country: 'Guest',
+      profile_photo: 'Guest',
       token: '',
+      bio: 'Guest',
+      company: '',
       is_staff: false,
       isAdmin: false,
       is_active: true,
-      password: ''
+      password: 'Guest'
     );
     notifyListeners();
   }

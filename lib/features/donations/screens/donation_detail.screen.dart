@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:sema/theme/app_styles.dart';
+import 'package:sema/utils/url.dart';
 
 class DonationDetailScreen extends StatelessWidget {
   final Map<String, dynamic> donation;
@@ -14,6 +15,7 @@ class DonationDetailScreen extends StatelessWidget {
        backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
+          title: Text("Donation Details", style: Styles.paragraph,)
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -32,7 +34,7 @@ class DonationDetailScreen extends StatelessWidget {
                     fit: BoxFit.cover,
                     
                     image: NetworkImage(
-                      'http://10.0.2.2:8000${donation['donation_cover']}',
+                      '$MediaUrl${donation['donation_cover']}',
                     ),
                   ),
                 ),
@@ -50,10 +52,34 @@ class DonationDetailScreen extends StatelessWidget {
                 padding: EdgeInsets.symmetric(horizontal: 16),
                 child: Text(
                   donation['description'],
-                  style: Styles.paragraph,
+               style: Styles.paragraph.copyWith(color: Colors.grey.shade800),
                 ),
               ),
-              SizedBox(height: 16),
+              Gap(20),
+              Padding(
+                padding: EdgeInsets.all(10) ,
+              child:TextFormField(
+                            
+                            keyboardType: TextInputType.emailAddress,
+                            decoration: InputDecoration(
+                              labelText: 'Amount to donate',
+                              labelStyle: TextStyle(
+                                  color: Color.fromARGB(255, 182, 182, 182)),
+                              filled: true,
+                              fillColor: Colors.white54,
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(15),
+                                borderSide: BorderSide.none,
+                              ),
+                            ),
+                            validator: (value) {
+                              if (value == null) {
+                                return 'Please enter amount';
+                              }
+                              return null;
+                            },
+                          ) ,),
+             
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Container(

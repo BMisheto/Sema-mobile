@@ -34,7 +34,7 @@ class _MyEventsState extends State<MyEvents> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Text(
-                  'Your Donations',
+                  'Your Events',
                   style: Styles.cardTitle
                 ),
                 InkWell(

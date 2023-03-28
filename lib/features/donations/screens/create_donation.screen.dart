@@ -9,6 +9,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:sema/providers/user_provider.dart';
 import 'package:sema/theme/app_styles.dart';
+import 'package:sema/utils/url.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart';
 import 'package:http/http.dart' as http;
@@ -46,7 +47,7 @@ class _CreateDonationScreenState extends State<CreateDonationScreen> {
 
     final request = http.MultipartRequest(
       'POST',
-      Uri.parse('http://10.0.2.2:8000/api/donations/create/'),
+      Uri.parse('${ApiUrl}api/donations/create/'),
     );
     request.headers['Authorization'] = 'Bearer $token';
 

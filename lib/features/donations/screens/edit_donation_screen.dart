@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import 'package:sema/model/donation_model.dart';
 import 'package:sema/providers/user_provider.dart';
 import 'package:sema/theme/app_styles.dart';
+import 'package:sema/utils/url.dart';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:image_picker/image_picker.dart';
@@ -47,7 +48,7 @@ class _DonationEditScreenState extends State<DonationEditScreen> {
       final request = http.MultipartRequest(
         'PUT',
         Uri.parse(
-            'http://10.0.2.2:8000/api/donations/update/${widget.donation['_id']}/'),
+            '${ApiUrl}api/donations/update/${widget.donation['_id']}/'),
       );
       request.headers.addAll({
         'Authorization': 'Bearer $token',
@@ -140,7 +141,7 @@ class _DonationEditScreenState extends State<DonationEditScreen> {
                       : 
                       SizedBox(
                           child: Image.network(
-                            'http://10.0.2.2:8000${widget.donation['donation_cover']}',
+                            '${MediaUrl}${widget.donation['donation_cover']}',
                             height: 200,
                             width: double.infinity,
                             fit: BoxFit.cover,

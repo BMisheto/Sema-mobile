@@ -105,7 +105,7 @@ class ProfilePosts extends StatelessWidget {
                                   context,
                                   CupertinoPageRoute(
                                     builder: (context) => PostDetailScreen(
-                                         postId: post['_id'].toString(),),
+                                         post: post),
                                   ),
                                 );
                               },

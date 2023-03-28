@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
+import 'package:sema/common/bottom_bar.dart';
 import 'package:sema/features/auth/screens/register_screen.dart';
 import 'package:sema/features/auth/services/auth_service.dart';
 import 'package:sema/model/user_model.dart';
@@ -55,183 +56,171 @@ class _AuthScreenState extends State<AuthScreen> {
     );
   }
 
+  // void loginAsGuest() {
+  //   userProvider.setGuestUser();
+  //   Navigator.of(context).pop();
+  // }
+
   void loginAsGuest() {
     userProvider.setGuestUser();
-    Navigator.of(context).pop();
+      Navigator.pushAndRemoveUntil(
+        context,
+        CupertinoPageRoute(builder: (context) => BottomBar()),
+        (route) => false,
+      );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-     
       body: Center(
         child: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: Container(
-              decoration:  BoxDecoration(
-                color:  Colors.white
-              ),
+              decoration: BoxDecoration(color: Colors.white),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Gap(30),
-                   Center(
-                     child: Column(
-                       children: [
+                  Center(
+                    child: Column(
+                      children: [
                         Container(
                           width: 100,
                           height: 100,
-                          
                           child: CircleAvatar(
                             radius: 100.0,
                             backgroundColor: Colors.white,
                             backgroundImage: const AssetImage(
                               'assets/Icon.png',
-                              
-                 
-                              
                             ),
                           ),
                         ),
                         Gap(10),
-                         Text(
-                          'Welcome',
-                          style: Styles.bigHeadline
-                                     ),
-                       ],
-                     ),
-                   ),
+                        Text('Welcome', style: Styles.bigHeadline),
+                      ],
+                    ),
+                  ),
                   Gap(30),
-                  
-                 
-                    Container(
-                      padding: const EdgeInsets.all(8),
-                      color: Colors.white,
-                     
-                      child: Form(
-                        key: _signInFormKey,
-                        child: Column(
-                          children: [
-                            TextFormField(
-                      controller: _emailController,
-                      keyboardType: TextInputType.emailAddress,
-                      decoration: InputDecoration(
-                        labelText: 'Email',
-                        labelStyle:
-                            TextStyle(color: Color.fromARGB(255, 182, 182, 182)),
-                        filled: true,
-                        fillColor: Styles.cardColor,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(15),
-                          borderSide: BorderSide.none,
-                        ),
-                      ),
-                      validator: (value) {
-                        if (value == null) {
-                          return 'Please enter an email';
-                        }
-                        return null;
-                      },
-                    ),
-                            const SizedBox(height: 10),
-                            TextFormField(
-                      controller: _passwordController,
-                      obscureText: true,
-                      decoration: InputDecoration(
-                        labelText: 'Password',
-                        labelStyle:
-                            TextStyle(color: Color.fromARGB(255, 182, 182, 182)),
-                        filled: true,
-                         fillColor: Styles.cardColor,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(15),
-                          borderSide: BorderSide.none,
-                        ),
-                       
-                      ),
-                      validator: (value) {
-                        if (value == null) {
-                          return 'Please enter your password';
-                        }
-                        return null;
-                      },
-                    ),
-                            const SizedBox(height: 10),
-                            Container(
-                              width: double.infinity,
-                              height: 60,
-                              decoration:  BoxDecoration(
-                                color:  Styles.blueColor, 
+
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    color: Colors.white,
+                    child: Form(
+                      key: _signInFormKey,
+                      child: Column(
+                        children: [
+                          TextFormField(
+                            controller: _emailController,
+                            keyboardType: TextInputType.emailAddress,
+                            decoration: InputDecoration(
+                              labelText: 'Email',
+                              labelStyle: TextStyle(
+                                  color: Color.fromARGB(255, 182, 182, 182)),
+                              filled: true,
+                              fillColor: Styles.cardColor,
+                              border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(15),
-                              ),
-                              child: Center(
-                                child: GestureDetector(
-                                  onTap: () {
-                                      if (_signInFormKey.currentState!.validate()) {
-                                        loginUser();
-                                      }
-                                    },
-                                  child: Text(
-                                     'Sign In',
-                                     style: Styles.cardTitle.copyWith(color: Colors.white)
-                                   
-                                  ),
-                                ),
+                                borderSide: BorderSide.none,
                               ),
                             ),
-                            Gap(20),
-                             Container(
-                              width: double.infinity,
-                              height: 60,
-                              decoration:  BoxDecoration(
-                                color:  Styles.blueColor, 
+                            validator: (value) {
+                              if (value == null) {
+                                return 'Please enter an email';
+                              }
+                              return null;
+                            },
+                          ),
+                          const SizedBox(height: 10),
+                          TextFormField(
+                            controller: _passwordController,
+                            obscureText: true,
+                            decoration: InputDecoration(
+                              labelText: 'Password',
+                              labelStyle: TextStyle(
+                                  color: Color.fromARGB(255, 182, 182, 182)),
+                              filled: true,
+                              fillColor: Styles.cardColor,
+                              border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(15),
-                              ),
-                              child: Center(
-                                child: GestureDetector(
-                                  onTap: () =>
-                            Navigator.of(context).push(CupertinoPageRoute(
-                          builder: (context) => RegisterScreen(),
-                        )),
-                                  child: Text(
-                                     'Sign Up',
-                                     style: Styles.cardTitle.copyWith(color: Colors.white)
-                                   
-                                  ),
-                                ),
+                                borderSide: BorderSide.none,
                               ),
                             ),
-                            Gap(10),
-                            Container(
-                              width: double.infinity,
-                              height: 60,
-                              decoration:  BoxDecoration(
-                                color:  Styles.blueColor, 
-                                borderRadius: BorderRadius.circular(15),
-                              ),
-                              child: Center(
-                                child: GestureDetector(
-                                  onTap: () {
-                                      loginAsGuest();
-                                    },
-                                  child: Text(
-                                     'Continue as Guest',
-                                     style: Styles.cardTitle.copyWith(color: Colors.white)
-                                   
-                                  ),
-                                ),
+                            validator: (value) {
+                              if (value == null) {
+                                return 'Please enter your password';
+                              }
+                              return null;
+                            },
+                          ),
+                          const SizedBox(height: 10),
+                          Container(
+                            width: double.infinity,
+                            height: 60,
+                            decoration: BoxDecoration(
+                              color: Styles.blueColor,
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                            child: Center(
+                              child: GestureDetector(
+                                onTap: () {
+                                  if (_signInFormKey.currentState!.validate()) {
+                                    loginUser();
+                                  }
+                                },
+                                child: Text('Sign In',
+                                    style: Styles.cardTitle
+                                        .copyWith(color: Colors.white)),
                               ),
                             ),
-                            Gap(10),
-                           
-                           
-                          ],
-                        ),
+                          ),
+                          Gap(20),
+                          Container(
+                            width: double.infinity,
+                            height: 60,
+                            decoration: BoxDecoration(
+                              color: Styles.blueColor,
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                            child: Center(
+                              child: GestureDetector(
+                                onTap: () => Navigator.of(context)
+                                    .push(CupertinoPageRoute(
+                                  builder: (context) => RegisterScreen(),
+                                )),
+                                child: Text('Sign Up',
+                                    style: Styles.cardTitle
+                                        .copyWith(color: Colors.white)),
+                              ),
+                            ),
+                          ),
+                          Gap(10),
+                          Container(
+                            width: double.infinity,
+                            height: 60,
+                            decoration: BoxDecoration(
+                              color: Styles.blueColor,
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                            child: Center(
+                              child: GestureDetector(
+                                onTap: () {
+                                  loginAsGuest();
+                                },
+                                child: Text('Continue as Guest',
+                                    style: Styles.cardTitle
+                                        .copyWith(color: Colors.white)),
+                              ),
+                            ),
+                          ),
+                          Gap(10),
+                        ],
                       ),
                     ),
+                  ),
                   // ListTile(
                   //   tileColor: Styles.cardColor,
                   //   title: Text(

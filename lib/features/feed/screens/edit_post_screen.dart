@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'package:sema/model/post_model.dart';
 import 'package:sema/providers/user_provider.dart';
 import 'package:sema/theme/app_styles.dart';
+import 'package:sema/utils/url.dart';
 
 class EditPostScreen extends StatefulWidget {
   final Map<String, dynamic> post;
@@ -32,7 +33,7 @@ class _EditPostScreenState extends State<EditPostScreen> {
       final token =
           Provider.of<UserProvider>(context, listen: false).user!.token;
       final response = await http.put(
-        Uri.parse('http://10.0.2.2:8000/api/feed/update/${widget.post['_id']}/'),
+        Uri.parse('${ApiUrl}api/feed/update/${widget.post['_id']}/'),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $token'

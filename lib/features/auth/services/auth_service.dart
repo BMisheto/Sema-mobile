@@ -8,6 +8,7 @@ import 'package:provider/provider.dart';
 import 'package:sema/common/bottom_bar.dart';
 import 'package:sema/features/feed/screens/feed_screen.dart';
 import 'package:sema/providers/user_provider.dart';
+import 'package:sema/utils/url.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthService {
@@ -21,7 +22,7 @@ void loginUser({
 }) async {
   try {
     http.Response res = await http.post(
-      Uri.parse('http://10.0.2.2:8000/api/users/login/'),
+      Uri.parse('${ApiUrl}api/users/login/'),
       body: jsonEncode({
         'email': email,
         'password': password,
@@ -70,7 +71,7 @@ void loginUser({
       }
 
       var tokenRes = await http.post(
-        Uri.parse('http://10.0.2.2:8000/api/users/login/'),
+        Uri.parse('${ApiUrl}api/users/login/'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
           'x-auth-token': token!
@@ -81,7 +82,7 @@ void loginUser({
 
       if (response == true) {
         http.Response userRes = await http.get(
-          Uri.parse('http://10.0.2.2:8000/api/users/login/'),
+          Uri.parse('${ApiUrl}api/users/login/'),
           headers: <String, String>{
             'Content-Type': 'application/json; charset=UTF-8',
             'x-auth-token': token

@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'package:sema/providers/user_provider.dart';
 import 'package:sema/theme/app_styles.dart';
+import 'package:sema/utils/url.dart';
 
 class CreatePostScreen extends StatefulWidget {
   const CreatePostScreen({Key? key}) : super(key: key);
@@ -42,7 +43,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
  Future<void> _createPost() async {
   final userProvider = Provider.of<UserProvider>(context, listen: false);
   final response = await http.post(
-    Uri.parse('http://10.0.2.2:8000/api/feed/create/'),
+    Uri.parse('${ApiUrl}api/feed/create/'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'Authorization': 'Bearer ${userProvider.user!.token}',
@@ -235,9 +236,9 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                   child: Center(
                     child: GestureDetector(
                       onTap: () {
-                    setState(() {
-                      _choiceControllers.add(TextEditingController());
-                    });
+                   setState(() {
+      _choiceControllers.add(TextEditingController());
+    });
                   },
                       child: Text('Add Choice',
                           style:

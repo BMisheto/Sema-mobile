@@ -26,6 +26,8 @@ class User {
   String last_name;
   String mobile;
   String country;
+  String bio;
+  String company;
   String password;
   String token;
   String profile_photo;
@@ -39,6 +41,8 @@ class User {
     required this.last_name,
     required this.mobile,
     required this.country,
+    required this.bio,
+    required this.company,
     required this.password,
     required this.token,
     required this.profile_photo,
@@ -54,6 +58,8 @@ class User {
     String? last_name,
     String? mobile,
     String? country,
+    String? bio,
+    String? company,
     String? password,
     String? token,
     String? profile_photo,
@@ -68,6 +74,8 @@ class User {
       last_name: last_name ?? this.last_name,
       mobile: mobile ?? this.mobile,
       country: country ?? this.country,
+      bio: bio ?? this.bio,
+      company: company ?? this.company,
       password: password ?? this.password,
       token: token?? this.token,
       profile_photo: profile_photo ?? this.profile_photo,
@@ -85,6 +93,8 @@ class User {
       'last_name': last_name,
       'mobile': mobile,
       'country': country,
+      'company': company,
+      'bio': bio,
       'password': password,
       'token': token,
       'profile_photo': profile_photo,
@@ -102,6 +112,8 @@ class User {
       last_name: map['last_name'] as String,
       mobile: map['mobile'] as String,
       country: map['country'] as String,
+      company: map['company'] as String,
+      bio: map['bio'] as String,
       password: map['password'] as String,
       token: map['token'] as String,
       profile_photo: map['profile_photo'] as String,

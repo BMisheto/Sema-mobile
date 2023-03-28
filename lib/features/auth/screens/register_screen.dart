@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:http/http.dart' as http;
 import 'package:sema/theme/app_styles.dart';
+import 'package:sema/utils/url.dart';
 
 class RegisterScreen extends StatefulWidget {
   @override
@@ -17,6 +18,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _mobileController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
 
   bool _isLoading = false;
   String _errorMessage = '';
@@ -29,7 +31,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
     try {
       final response = await http.post(
-        Uri.parse('http://10.0.2.2:8000/api/users/register/'),
+        Uri.parse('${ApiUrl}api/users/register/'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           'first_name': _firstNameController.text,

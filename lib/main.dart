@@ -50,7 +50,7 @@ class _MyAppState extends State<MyApp> {
           ),
         ),
       ),
-      home: (Provider.of<UserProvider>(context).user?.token.isNotEmpty == true
+      home: (Provider.of<UserProvider>(context).user?.token.isNotEmpty == true 
           ? const BottomBar()
           : const AuthScreen()),
     );

@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:provider/provider.dart';
+import 'package:sema/features/auth/screens/password_change_screen.dart';
 import 'package:sema/model/user_model.dart';
 import 'package:sema/providers/user_provider.dart';
 import 'package:sema/theme/app_styles.dart';
@@ -27,6 +28,8 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
   late TextEditingController _lastNameController;
   late TextEditingController _mobileController;
   late TextEditingController _countryController;
+  late TextEditingController _companyController;
+  late TextEditingController _bioController;
   File? _imageFile;
 
 
@@ -43,6 +46,10 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
         TextEditingController(text: userProvider.user?.mobile);
     _countryController =
         TextEditingController(text: userProvider.user?.country);
+    _companyController =
+        TextEditingController(text: userProvider.user?.company);
+    _bioController =
+        TextEditingController(text: userProvider.user?.bio);
   }
   Future<void> _updateUser() async {
     final userProvider = Provider.of<UserProvider>(context, listen: false);
@@ -56,8 +63,10 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
       'last_name': _lastNameController.text,
       'mobile': _mobileController.text,
       'country': _countryController.text,
+      'company': _companyController.text,
+      'bio': _bioController.text,
       'email':  userProvider.user!.email,
-      'password': userProvider.user!.password
+     
     });
 
 
@@ -73,6 +82,8 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
         country: _countryController.text,
         token: userProvider.user!.token,
         email: userProvider.user!.email,
+        company: userProvider.user!.company,
+        bio: userProvider.user!.bio,
         password: userProvider.user!.password,
         id: userProvider.user!.id,
         is_active: userProvider.user!.is_active,
@@ -209,6 +220,54 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
                 },
               ),
               Gap(15),
+              TextFormField(
+                controller: _companyController,
+                decoration: InputDecoration(
+                    labelText: 'Company',
+                    labelStyle:
+                        TextStyle(color: Color.fromARGB(255, 182, 182, 182)),
+                    filled: true,
+                    fillColor: Colors.grey[200],
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(15),
+                      borderSide: BorderSide.none,
+                    ),
+                  ),
+                
+              ),
+              Gap(15),
+              TextFormField(
+                controller: _bioController,
+                maxLines: null,
+               decoration: InputDecoration(
+                    labelText: 'Bio',
+                    labelStyle:
+                        TextStyle(color: Color.fromARGB(255, 182, 182, 182)),
+                    filled: true,
+                    fillColor: Colors.grey[200],
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(15),
+                      borderSide: BorderSide.none,
+                    ),
+                  ),
+               
+              ),
+              Gap(15),
+
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  GestureDetector(
+                    onTap: () =>
+                          Navigator.of(context).push(CupertinoPageRoute(
+                        builder: (context) => PasswordChangeScreen(),
+                      )),
+                    child: Text("Change Password", style: Styles.cardDescription.copyWith(color: Colors.red),)
+                  )
+                  
+                ],
+              ),
+                Gap(20),
               
              
               Container(

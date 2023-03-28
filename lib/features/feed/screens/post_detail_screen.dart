@@ -6,13 +6,14 @@ import 'package:http/http.dart' as http;
 import 'package:gap/gap.dart';
 
 import 'package:sema/theme/app_styles.dart';
+import 'package:sema/utils/url.dart';
 import 'package:sema/widgets/comment_items.dart';
 import 'package:sema/widgets/poll_items.dart';
 
 class PostDetailScreen extends StatefulWidget {
-  final String postId;
+  final Map<String, dynamic> post;
 
-  const PostDetailScreen({required this.postId});
+  const PostDetailScreen({required this.post});
 
   @override
   _PostDetailScreenState createState() => _PostDetailScreenState();
@@ -40,7 +41,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
     });
     try {
       final response = await http
-          .get(Uri.parse('http://10.0.2.2:8000/api/feed/${widget.postId}/'));
+          .get(Uri.parse('http://10.0.2.2:8000/api/feed/${widget.post['_id']}/'));
       final data = json.decode(response.body);
       if (data['post'] != null) {
         setState(
@@ -62,7 +63,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
   _fetchComments() async {
     try {
       final response = await http.get(Uri.parse(
-          'http://10.0.2.2:8000/api/feed/comments/${widget.postId}/'));
+          '${ApiUrl}api/feed/comments/${widget.post['_id']}/'));
       final data = json.decode(response.body);
       setState(() {
         comments = List<dynamic>.from(data['comments']);
@@ -76,7 +77,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
   _fetchPolls() async {
     try {
       final response = await http.get(
-          Uri.parse('http://10.0.2.2:8000/api/feed/polls/${widget.postId}/'));
+          Uri.parse('${ApiUrl}api/feed/polls/${widget.post['_id']}/'));
       final data = json.decode(response.body);
       setState(() {
         polls = List<dynamic>.from(data['polls']);
@@ -91,7 +92,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
     try {
       final response = await http.post(
         Uri.parse(
-            'http://10.0.2.2:8000/api/feed/${widget.postId}/comment/create/'),
+            '${ApiUrl}api/feed/${widget.post['_id']}/comment/create/'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },
@@ -129,7 +130,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
   void _onVote(String pollId) async {
     try {
       final url =
-          Uri.parse('http://10.0.2.2:8000/api/feed/polls/${pollId}/vote/');
+          Uri.parse('${ApiUrl}api/feed/polls/${pollId}/vote/');
       final response = await http.put(url);
       if (response.statusCode == 200) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -159,7 +160,6 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    print(widget.postId);
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
